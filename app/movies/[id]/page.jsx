@@ -6,9 +6,11 @@ const page = ({ params }) => {
   const movieId = params.id;
 
   return (
-    <div>
+    <div className="">
       <h3 className="text-2xl font-bold text-red-500 capitalize ">{movieId}</h3>
-      <SeatingArrangment />
+      <div className=" ">
+        <SeatingArrangment />
+      </div>
     </div>
   );
 };
