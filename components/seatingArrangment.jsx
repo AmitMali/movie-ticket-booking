@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import Seat from "@/app/components/seat";
+import Seat from "@/components/seat";
 import { seatingArraingment } from "../data/seatingArrangment";
 import { useSelector } from "react-redux";
 

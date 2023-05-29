@@ -1,6 +1,6 @@
 "use client";
 
-import SeatingArrangment from "@/app/components/seatingArrangment";
+import SeatingArrangment from "@/components/seatingArrangment";
 import React from "react";
 const page = ({ params }) => {
   const movieId = params.id;

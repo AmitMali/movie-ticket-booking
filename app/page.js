@@ -1,6 +1,6 @@
 "use client";
 import { useAuth0 } from "@auth0/auth0-react";
-import LoginButton from "./components/loginButton";
+import LoginButton from "../components/loginButton";
 
 export default function Home() {
   const { user, error, isLoading } = useAuth0();
