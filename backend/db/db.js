@@ -1,10 +1,10 @@
 const user = require("../models/userSchema");
+const movie = require("../models/moviesSchema");
 
 // create user
 const createUserDB = async (data) => {
   try {
-    const createdUser = await user.create(data);
-    return createdUser;
+    await user.create(data);
   } catch (err) {
     return err;
   }
@@ -56,7 +56,18 @@ const deleteUserByID = async (userId) => {
     return err;
   }
 };
-
+// movie DB operatios
+const getMoviesInRange = async (offset, limit) => {
+  //get movies are in range of
+  //offset : specifies from where to start doccument
+  //limit: what amount of documents what to load from db
+  try {
+    const allMovies = await movie.find().skip(offset).limit(limit).exec();
+    return allMovies;
+  } catch (err) {
+    return err;
+  }
+};
 module.exports = {
   createUserDB,
   getUserByEmail,
@@ -64,4 +75,5 @@ module.exports = {
   getAllUsers,
   updateUserById,
   deleteUserByID,
+  getMoviesInRange,
 };

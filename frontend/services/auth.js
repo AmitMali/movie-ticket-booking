@@ -11,8 +11,17 @@ export const handleLogin = async (email, password) => {
   }
 };
 export const handleSignup = async (data) => {
+  const inputData = {
+    name: data.name,
+    email: data.email,
+    password: data.password,
+    role: data.role,
+  };
   try {
-    return await axios.post(`${apiBaseUrl}auth/signup`, data);
+    const api = `${apiBaseUrl}auth/signup`;
+    const result = await axios.post(api, inputData);
+
+    return result;
   } catch (error) {
     return error;
   }

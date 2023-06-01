@@ -1,24 +1,51 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { handleSignup } from "@/services/auth";
+import { redirect } from "next/navigation";
+import Alert from "../ui/alert";
 
 const Signup = () => {
   const {
     register,
     handleSubmit,
     watch,
+    reset,
     formState: { errors },
   } = useForm();
-  const onSubmit = async (data) => await handleSignup(data);
-  console.log(onSubmit);
+  const [signupSuccess, setSignupSuccess] = useState(false);
+
+  const onSubmit = async (data) => {
+    const createdUser = await handleSignup({ ...data, role: "user" });
+    if (createdUser.status === 201) {
+      setSignupSuccess(true);
+      reset();
+      redirect();
+    } else alert("something went wrong");
+  };
+
   return (
     <div>
       <div className="flex min-h-screen items-center justify-center bg-white dark:bg-white-950 p-12">
         <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="my-2">
+            {signupSuccess ? (
+              <>
+                <Alert
+                  type="success"
+                  message={`Account Created Successfully `}
+                />
+              </>
+            ) : (
+              <></>
+            )}
+          </div>
           <div className="max-w-sm rounded-3xl bg-gradient-to-b from-sky-300 to-purple-500 p-px dark:from-white-800 dark:to-transparent">
             <div className="rounded-[calc(1.5rem-1px)] bg-white px-10 p-12 dark:bg-white-900">
+              <h1 className="text-xl font-semibold text-white-800 text-gray-700">
+                Create your account
+              </h1>
               <div className="mt-8 space-y-8">
                 <div className="space-y-6">
                   <input
@@ -27,16 +54,21 @@ const Signup = () => {
                     type="text"
                     name="name"
                     id="name"
-                    {...register("name")}
+                    {...register("name", { required: true })}
                   />
+                  {errors.name?.type === "required" && (
+                    <p role="alert">name is required</p>
+                  )}
+
                   <input
                     className="w-full bg-transparent text-white-600 text-gray-700 dark:border-white-700 rounded-md border border-white-300 px-3 py-2 text-sm placeholder-white-600 invalid:border-red-500 dark:placeholder-white-300"
                     placeholder="Your Email"
                     type="email"
                     name="email"
                     id="email"
-                    {...register("email")}
+                    {...register("email", { required: true })}
                   />
+                  {errors.mail && <p role="alert">{errors.mail?.message}</p>}
                   <input
                     className="w-full bg-transparent text-white-600 text-gray-700 dark:border-white-700 rounded-md border border-white-300 px-3 py-2 text-sm placeholder-white-600 invalid:border-red-500 dark:placeholder-white-300"
                     placeholder="Your Password"
@@ -45,6 +77,9 @@ const Signup = () => {
                     id="password"
                     {...register("password")}
                   />
+                  {errors.password?.type === "required" && (
+                    <p role="alert">Password is required</p>
+                  )}
                   <input
                     className="w-full bg-transparent text-white-600 text-gray-700 dark:border-white-700 rounded-md border border-white-300 px-3 py-2 text-sm placeholder-white-600 invalid:border-red-500 dark:placeholder-white-300"
                     placeholder="Confirm Password"
@@ -59,9 +94,6 @@ const Signup = () => {
                 </button>
               </div>
               <div>
-                <h1 className="text-xl font-semibold text-white-800 text-gray-700">
-                  Signin to your account
-                </h1>
                 <p className="text-sm tracking-wide text-white-600 text-gray-700-300">
                   have an account ?
                   <Link
