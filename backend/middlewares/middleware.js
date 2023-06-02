@@ -12,6 +12,7 @@ const errorMiddleware = (err, req, res, next) => {
 
 //hash password
 const encryptPassword = (req, res, next) => {
+  console.log("encrypt middleware");
   if (req.body.password) {
     const saltRounds = 10;
     bcrypt.hash(req.body.password, saltRounds, (err, hash) => {

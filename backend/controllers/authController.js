@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const JWT_SECRET = process.env.JWT_SECRET;
 const login = (req, res) => {
+  console.log(req.body);
   const user = validateUser(req.body.email, req.body.password);
   if (user) {
     const token = jwt.sign({ userId: user._id }, JWT_SECRET);

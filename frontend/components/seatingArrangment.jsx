@@ -6,25 +6,36 @@ import { useDispatch, useSelector } from "react-redux";
 import { setSeatStatus } from "@/util/bookingUtility";
 import { BiRupee } from "react-icons/bi";
 import { setBookingData } from "@/redux/features/movieBooking";
+import { setLocalStorageWithExpiry } from "@/util/storageUtility";
 import Link from "next/link";
 const SeatingArrangment = (props) => {
   const { totalPrice, bookedSeats } = useSelector((state) => state.booking);
-  console.log(props);
   const { movieTitle, screen, showTime, theaterId, movieId } = props.screenData;
 
   const dispatch = useDispatch();
   const ticketPrice = {
+    //TODO: fetch prices of creen and seating time from api latter
     platinun: 100,
     silver: 120,
     Executive: 150,
     executive: 180,
     recliner: 230,
   };
+  const bookingData = {
+    movieId,
+    movieTitle,
+    screen,
+    showTime,
+    theaterId,
+    totalPrice,
+    bookedSeats,
+  };
   useEffect(() => {
     dispatch(
       setBookingData({ movieId, movieTitle, screen, showTime, theaterId })
     );
-  }, []);
+    setLocalStorageWithExpiry("bookingData", bookingData, 1000 * 5 * 60);
+  }, [bookedSeats]);
   return (
     <>
       <div className=" flex items-end justify-center mb-3">
