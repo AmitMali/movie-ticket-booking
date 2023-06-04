@@ -16,12 +16,13 @@ const LoginForm = () => {
   const [loginSuccess, setLoginSuccess] = useState(false);
 
   const onSubmit = async (data) => {
-    console.log(data);
-    const logedinUser = await handleLogin(data.email, data.password);
-    if (logedinUser.status === 201) {
+    const result = await handleLogin(data.email, data.password);
+    const logedinUser = await result.data;
+    if (logedinUser.login) {
+      //loggedinUser return true when logged in else return false
+
       setLoginSuccess(true);
-      reset();
-      redirect();
+      localStorage.setItem("token", logedinUser.token);
     } else setLoginSuccess("loginFailed");
   };
   return (
@@ -46,7 +47,7 @@ const LoginForm = () => {
               <></>
             )}
           </div>
-          <div className="max-w-sm rounded-3xl bg-gradient-to-b from-sky-300 to-purple-500 p-px dark:from-white-800 dark:to-transparent">
+          <div className="max-w-sm rounded-3xl bg-gradient-to-b from-red-300 to-purple-500 p-px dark:from-white-800 dark:to-transparent">
             <div className="rounded-[calc(1.5rem-1px)] bg-white px-10 p-12 dark:bg-white-900">
               <div className="mt-8 space-y-8">
                 <div className="space-y-6">
@@ -67,7 +68,7 @@ const LoginForm = () => {
                     {...register("password", { required: true })}
                   />
                 </div>
-                <button className="h-9 px-3 w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 focus:bg-blue-700 transition duration-500 rounded-md text-white">
+                <button className="h-9 px-3 w-full bg-red-600 hover:bg-red-700 active:bg-red-800 focus:bg-red-700 transition duration-500 rounded-md text-white">
                   Login
                 </button>
               </div>

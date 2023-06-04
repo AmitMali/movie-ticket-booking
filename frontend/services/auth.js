@@ -26,3 +26,8 @@ export const handleSignup = async (data) => {
     return error;
   }
 };
+
+export const isLoggedIn = () => {
+  if (localStorage.getItem("token")) return true;
+  else return false;
+};

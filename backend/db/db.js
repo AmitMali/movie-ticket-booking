@@ -20,7 +20,7 @@ const getAllUsers = async () => {
 };
 const getUserByEmail = async (email) => {
   try {
-    const loggedInUser = await user.find({ email: email });
+    const loggedInUser = await user.findOne({ email: email });
     return loggedInUser;
   } catch (err) {
     return err;

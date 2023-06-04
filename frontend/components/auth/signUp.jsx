@@ -1,28 +1,52 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { handleSignup } from "@/services/auth";
-import { redirect } from "next/navigation";
+
 import Alert from "../ui/alert";
 
 const Signup = () => {
   const {
     register,
     handleSubmit,
-    watch,
-    reset,
-    formState: { errors },
+    formState: { errors, ...formState },
   } = useForm();
-  const [signupSuccess, setSignupSuccess] = useState(false);
 
+  const router = useRouter();
+  const [signupErrors, setSignupErrors] = useState(false);
+  const callbackUrl = router.query?.callbackUrl ?? "/";
   const onSubmit = async (data) => {
-    const createdUser = await handleSignup({ ...data, role: "user" });
-    if (createdUser.status === 201) {
-      setSignupSuccess(true);
-      reset();
-      redirect();
-    } else alert("something went wrong");
+    const response = await handleSignup({ ...data, role: "user" });
+    const createdUser = await response.response.data;
+    console.log(createdUser);
+    if (createdUser) {
+      switch (createdUser.status) {
+        case "existing_user": {
+          setSignupErrors({
+            type: "existing_user",
+            message: "User Allready Exist with this Email",
+          });
+
+          break;
+        }
+        case "user_creation_failed": {
+          setSignupErrors({
+            type: "user_creation_failed",
+            message: "Registration Failed Something Wrong",
+          });
+
+          break;
+        }
+        case "user_created": {
+          router.push(callbackUrl);
+          break;
+        }
+        default:
+          break;
+      }
+    }
   };
 
   return (
@@ -30,18 +54,13 @@ const Signup = () => {
       <div className="flex min-h-screen items-center justify-center bg-white dark:bg-white-950 p-12">
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="my-2">
-            {signupSuccess ? (
-              <>
-                <Alert
-                  type="success"
-                  message={`Account Created Successfully `}
-                />
-              </>
-            ) : (
-              <></>
-            )}
+            <>
+              {signupErrors && (
+                <Alert type="error" message={signupErrors.message} />
+              )}
+            </>
           </div>
-          <div className="max-w-sm rounded-3xl bg-gradient-to-b from-sky-300 to-purple-500 p-px dark:from-white-800 dark:to-transparent">
+          <div className="max-w-sm rounded-3xl bg-gradient-to-b from-red-300 to-purple-500 p-px dark:from-white-800 dark:to-transparent">
             <div className="rounded-[calc(1.5rem-1px)] bg-white px-10 p-12 dark:bg-white-900">
               <h1 className="text-xl font-semibold text-white-800 text-gray-700">
                 Create your account
@@ -54,10 +73,16 @@ const Signup = () => {
                     type="text"
                     name="name"
                     id="name"
-                    {...register("name", { required: true })}
+                    {...register("name", {
+                      required: "Please enter your name",
+                      maxLength: 20,
+                      pattern: /^[A-Za-z]+$/i,
+                    })}
                   />
                   {errors.name?.type === "required" && (
-                    <p role="alert">name is required</p>
+                    <p className="!m-0 text-red-500  text-xs">
+                      {errors.name?.message}
+                    </p>
                   )}
 
                   <input
@@ -66,19 +91,29 @@ const Signup = () => {
                     type="email"
                     name="email"
                     id="email"
-                    {...register("email", { required: true })}
+                    {...register("email", {
+                      required: "Please enter your Email",
+                    })}
                   />
-                  {errors.mail && <p role="alert">{errors.mail?.message}</p>}
+                  {errors.email?.type === "required" && (
+                    <p className="!m-0 text-red-500 text-xs">
+                      {errors.email?.message}
+                    </p>
+                  )}
                   <input
                     className="w-full bg-transparent text-white-600 text-gray-700 dark:border-white-700 rounded-md border border-white-300 px-3 py-2 text-sm placeholder-white-600 invalid:border-red-500 dark:placeholder-white-300"
                     placeholder="Your Password"
                     type="password"
                     name="password"
                     id="password"
-                    {...register("password")}
+                    {...register("password", {
+                      required: "Please enter password",
+                    })}
                   />
                   {errors.password?.type === "required" && (
-                    <p role="alert">Password is required</p>
+                    <p className="!m-0 text-red-500 text-xs">
+                      {errors.password?.message}
+                    </p>
                   )}
                   <input
                     className="w-full bg-transparent text-white-600 text-gray-700 dark:border-white-700 rounded-md border border-white-300 px-3 py-2 text-sm placeholder-white-600 invalid:border-red-500 dark:placeholder-white-300"
@@ -86,10 +121,17 @@ const Signup = () => {
                     type="password"
                     name="cpassword"
                     id="cpassword"
-                    {...register("cpassword")}
+                    {...register("cpassword", {
+                      required: "Please confirm password",
+                    })}
                   />
+                  {errors.cpassword?.type === "required" && (
+                    <p className="!m-0 text-red-500 text-xs">
+                      {errors.cpassword?.message}
+                    </p>
+                  )}
                 </div>
-                <button className="h-9 px-3 w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 focus:bg-blue-700 transition duration-500 rounded-md text-white">
+                <button className="h-9 px-3 w-full bg-red-600 hover:bg-red-700 active:bg-red-800 focus:bg-red-700 transition duration-500 rounded-md text-white">
                   Signup
                 </button>
               </div>
